@@ -10,6 +10,7 @@ import os
 from dotenv import load_dotenv
 
 app = Flask(__name__)
+
 app.secret_key = 'hospital_management_secret_key'
 
 load_dotenv()
@@ -20,7 +21,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 # Create a Gemini model
 def get_gemini_model():
-    return genai.GenerativeModel('gemini-pro')
+    return genai.GenerativeModel('gemini-2.0-flash')
 
 # Function to generate medical chatbot responses
 def generate_medical_response(prompt, patient_info=None):
@@ -37,7 +38,8 @@ def generate_medical_response(prompt, patient_info=None):
             - Gender: {patient_info['gender']}
             - Medical History: {patient_info['medical_history']}
             - Blood Group: {patient_info['blood_group']}
-            
+            Format the whole thing, Make it fully structured please. I don't want unnecessary things only what I ask.
+
             Provide helpful medical information based on the patient's question.
             Always recommend consulting with a doctor for specific medical advice.
             Do not provide definitive diagnoses or prescribe medications.
