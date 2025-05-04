@@ -1,77 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: white;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Arial', sans-serif;
-        }
-        .login-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            max-width: 400px;
-            width: 100%;
-            border: 1px solid #e9ecef;
-            transition: transform 0.3s ease;
-        }
-        .login-container:hover {
-            transform: scale(1.02);
-        }
-        .login-header {
-            background: linear-gradient(to right, #20c997, #0dcaf0);
-            color: white;
-            margin: -2rem -2rem 2rem;
-            padding: 1rem;
-            text-align: center;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
-        .form-control, .form-select {
-            background: white;
-            border: 1px solid #ced4da;
-            transition: all 0.3s ease;
-        }
-        .form-control:focus, .form-select:focus {
-            box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.25);
-            border-color: #20c997;
-        }
-        .btn-primary {
-            background: linear-gradient(to right, #20c997, #0dcaf0);
-            border: none;
-            transition: transform 0.2s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            background: linear-gradient(to right, #19b382, #09b1dc);
-        }
-        .form-text {
-            color: #6c757d;
-            font-size: 0.85rem;
-        }
-        .text-muted {
-            color: #6c757d !important;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="login-container">
-                    <div class="login-header">
-                        <h4 class="mb-0">Login to Your Account</h4>
-                    </div>
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Login</h4>
+                </div>
+                <div class="card-body">
                     <form method="post">
                         <div class="mb-3">
                             <label for="user_type" class="form-label">Login As</label>
@@ -90,19 +29,11 @@
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">Login</button>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a href="#" class="text-muted text-decoration-none">Forgot Password?</a>
-                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap 5 JS (optional, but recommended for future interactions) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}
