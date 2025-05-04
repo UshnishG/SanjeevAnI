@@ -1,13 +1,65 @@
 # app.py - Main Flask Application
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
+import google.generativeai as genai
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.secret_key = 'hospital_management_secret_key'
+
+load_dotenv()
+
+# Configure Gemini API
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
+
+# Create a Gemini model
+def get_gemini_model():
+    return genai.GenerativeModel('gemini-pro')
+
+# Function to generate medical chatbot responses
+def generate_medical_response(prompt, patient_info=None):
+    try:
+        model = get_gemini_model()
+        
+        # Add context if patient info is available
+        if patient_info:
+            system_prompt = f"""
+            You are a helpful medical assistant for a hospital management system.
+            You are helping a patient with the following information:
+            - Name: {patient_info['name']}
+            - Age: {patient_info['age']}
+            - Gender: {patient_info['gender']}
+            - Medical History: {patient_info['medical_history']}
+            - Blood Group: {patient_info['blood_group']}
+            
+            Provide helpful medical information based on the patient's question.
+            Always recommend consulting with a doctor for specific medical advice.
+            Do not provide definitive diagnoses or prescribe medications.
+            """
+            
+            response = model.generate_content([system_prompt, prompt])
+        else:
+            # General medical assistant context
+            system_prompt = """
+            You are a helpful medical assistant for a hospital management system.
+            Provide general medical information based on the user's question.
+            Always recommend consulting with a doctor for specific medical advice.
+            Do not provide definitive diagnoses or prescribe medications.
+            Keep your responses concise and informative.
+            """
+            
+            response = model.generate_content([system_prompt, prompt])
+        
+        return response.text
+    except Exception as e:
+        return f"Sorry, I encountered an error: {str(e)}"
+
 
 # Database Setup
 DB_PATH = 'hospital_management.db'
@@ -235,6 +287,41 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    # Check if user is logged in
+    if 'user_id' not in session:
+        return jsonify({"response": "Please log in to use the medical chatbot."})
+    
+    data = request.get_json()
+    query = data.get('query', '')
+    
+    # If patient is logged in, provide personalized responses
+    if session.get('user_type') == 'patient':
+        patient_id = session.get('user_id')
+        
+        # Get patient information
+        conn = get_db_connection()
+        patient = conn.execute('SELECT * FROM Patient WHERE PatientID = ?', (patient_id,)).fetchone()
+        conn.close()
+        
+        if patient:
+            patient_info = {
+                'name': patient['Name'],
+                'age': patient['Age'],
+                'gender': patient['Gender'],
+                'medical_history': patient['MedicalHistory'],
+                'blood_group': patient['BloodGroup']
+            }
+            response = generate_medical_response(query, patient_info)
+        else:
+            response = generate_medical_response(query)
+    else:
+        # Generic response for doctors and admins
+        response = generate_medical_response(query)
+    
+    return jsonify({"response": response})
 
 @app.route('/dashboard')
 def dashboard():

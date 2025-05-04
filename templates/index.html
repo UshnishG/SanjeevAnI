@@ -2,47 +2,477 @@
 
 {% block title %}Home{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Hero section styling */
+    .hero-section {
+        background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+        color: white;
+        padding: 80px 0;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 400px;
+        height: 100%;
+        background-image: url('https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.5.6/svg/ios-pulse.svg');
+        background-size: cover;
+        opacity: 0.1;
+    }
+    
+    .hero-title {
+        font-weight: 700;
+        margin-bottom: 20px;
+        font-size: 2.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        font-weight: 300;
+    }
+    
+    .hero-buttons .btn {
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .hero-buttons .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Feature cards styling */
+    .feature-section {
+        margin-top: -60px;
+    }
+    
+    .feature-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    }
+    
+    .feature-card .card-body {
+        padding: 30px;
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 2rem;
+    }
+    
+    .patient-icon {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+    
+    .doctor-icon {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+    }
+    
+    .admin-icon {
+        background-color: rgba(155, 89, 182, 0.1);
+        color: #9b59b6;
+    }
+    
+    .feature-card .card-title {
+        font-weight: 700;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+    }
+    
+    .feature-card .card-text {
+        color: #6c757d;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    
+    /* Benefits section styling */
+    .benefits-section {
+        padding: 80px 0;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 50px;
+        position: relative;
+        padding-bottom: 20px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 3px;
+        background-color: #3498db;
+    }
+    
+    .benefit-card {
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        background-color: white;
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+    }
+    
+    .benefit-card:hover {
+        border-left-color: #3498db;
+        transform: translateY(-5px);
+    }
+    
+    .benefit-icon {
+        font-size: 1.5rem;
+        color: #3498db;
+        margin-bottom: 15px;
+    }
+    
+    .benefit-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+    
+    .benefit-text {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+    
+    /* Testimonial section styling */
+    .testimonial-section {
+        background-color: #f8f9fa;
+        padding: 80px 0;
+        border-radius: 15px;
+    }
+    
+    .testimonial-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .testimonial-card::before {
+        content: '"';
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 4rem;
+        color: rgba(52, 152, 219, 0.1);
+        font-family: 'Georgia', serif;
+        line-height: 1;
+    }
+    
+    .testimonial-text {
+        font-style: italic;
+        color: #6c757d;
+        margin-bottom: 20px;
+        padding-left: 30px;
+    }
+    
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+    }
+    
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #3498db;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-weight: 700;
+    }
+    
+    .author-info h5 {
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .author-info p {
+        margin-bottom: 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    /* Footer CTA styling */
+    .footer-cta {
+        background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+        color: white;
+        padding: 50px 0;
+        border-radius: 15px;
+        margin-bottom: 50px;
+    }
+    
+    .cta-text {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    .cta-button {
+        background-color: white;
+        color: #3498db;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .cta-button:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .hero-title {
+            font-size: 2.3rem;
+        }
+        
+        .feature-section {
+            margin-top: 50px;
+        }
+        
+        .feature-card {
+            margin-bottom: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
+<!-- Hero Section -->
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <h1 class="display-4">Welcome to Hospital Management System</h1>
-            <p class="lead">A comprehensive solution for managing hospital operations, patients, and medical records.</p>
-            
-            <div class="mt-5">
-                {% if not session.get('user_id') %}
-                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mx-2">Login</a>
-                {% else %}
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg mx-2">Go to Dashboard</a>
-                {% endif %}
+    <div class="hero-section mb-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7 px-4">
+                    <h1 class="hero-title">Modern Healthcare Management Platform</h1>
+                    <p class="hero-subtitle">Streamline hospital operations, enhance patient care, and optimize medical record management with our comprehensive solution.</p>
+                    <div class="hero-buttons">
+                        {% if not session.get('user_id') %}
+                            <a href="{{ url_for('login') }}" class="btn btn-light me-3">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                            <a href="#features" class="btn btn-outline-light">
+                                <i class="fas fa-info-circle me-2"></i>Learn More
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-light">
+                                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block">
+                    <div class="text-center">
+                        <i class="fas fa-hospital fa-10x text-white-50"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="row mt-5">
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <h3 class="card-title">For Patients</h3>
-                    <p class="card-text">Access your medical records, book appointments, and communicate with your doctors.</p>
+    <!-- Feature Cards Section -->
+    <div class="feature-section" id="features">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon patient-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="card-title">For Patients</h3>
+                        <p class="card-text">Access your medical records, schedule appointments with specialists, and communicate directly with your healthcare providers.</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary mt-3">Patient Login</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon doctor-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h3 class="card-title">For Doctors</h3>
+                        <p class="card-text">Manage your patient records, update medical diagnoses, schedule appointments, and collaborate with other healthcare professionals.</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-success mt-3">Doctor Login</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon admin-icon">
+                            <i class="fas fa-user-cog"></i>
+                        </div>
+                        <h3 class="card-title">For Administrators</h3>
+                        <p class="card-text">Oversee hospital operations, manage staff and resources, ensure regulatory compliance, and optimize healthcare delivery.</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-purple mt-3">Admin Login</a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <h3 class="card-title">For Doctors</h3>
-                    <p class="card-text">Manage your patients, update medical records, and schedule appointments.</p>
+    </div>
+    
+    <!-- Benefits Section -->
+    <div class="benefits-section">
+        <h2 class="section-title">Why Choose Our System</h2>
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h4 class="benefit-title">Secure & Compliant</h4>
+                    <p class="benefit-text">Enterprise-grade security with full HIPAA compliance to protect sensitive patient information.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4 class="benefit-title">Improved Collaboration</h4>
+                    <p class="benefit-text">Seamless communication between doctors, staff, and patients for better care coordination.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="benefit-title">Enhanced Efficiency</h4>
+                    <p class="benefit-text">Streamlined workflows reduce administrative burden and optimize resource allocation.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4 class="benefit-title">Mobile Accessible</h4>
+                    <p class="benefit-text">Access medical information and manage appointments from any device, anywhere.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-file-medical-alt"></i>
+                    </div>
+                    <h4 class="benefit-title">Comprehensive Records</h4>
+                    <p class="benefit-text">Complete medical history, diagnoses, prescriptions, and treatment plans in one place.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h4 class="benefit-title">AI-Assisted Support</h4>
+                    <p class="benefit-text">Intelligent chatbot provides immediate responses to common medical questions and concerns.</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <h3 class="card-title">For Administrators</h3>
-                    <p class="card-text">Oversee hospital operations, manage staff, and ensure efficient patient care.</p>
+    </div>
+    
+    <!-- Testimonials Section -->
+    <div class="testimonial-section">
+        <div class="container">
+            <h2 class="section-title">What Users Say</h2>
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">The patient portal has made managing my healthcare so much easier. I can book appointments and view my medical records with just a few clicks.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">RP</div>
+                            <div class="author-info">
+                                <h5>Rahul Patel</h5>
+                                <p>Patient</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">As a doctor, I've seen a significant improvement in my workflow efficiency. The system helps me provide better care to my patients.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">DS</div>
+                            <div class="author-info">
+                                <h5>Dr. Sharma</h5>
+                                <p>Cardiologist</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">The administrative features have streamlined our hospital operations. Staff management and resource allocation have never been more efficient.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">AG</div>
+                            <div class="author-info">
+                                <h5>Ananya Gupta</h5>
+                                <p>Hospital Administrator</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- Footer CTA Section -->
+    <div class="footer-cta mt-5">
+        <div class="container text-center">
+            <h2 class="cta-text">Ready to transform your healthcare experience?</h2>
+            {% if not session.get('user_id') %}
+                <a href="{{ url_for('login') }}" class="btn cta-button">Get Started Now</a>
+            {% else %}
+                <a href="{{ url_for('dashboard') }}" class="btn cta-button">Go to Dashboard</a>
+            {% endif %}
         </div>
     </div>
 </div>

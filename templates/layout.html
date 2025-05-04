@@ -6,24 +6,524 @@
     <title>Hospital Management System - {% block title %}{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <style>
-        .sidebar {
-            min-height: calc(100vh - 56px);
-            background-color: #f8f9fa;
-            padding-top: 20px;
+        /* General Layout Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f8fa;
+            overflow-x: hidden;
         }
-        .nav-link {
+        
+        /* Main content container */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            min-height: calc(100vh - 60px);
+            transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 100;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        
+        .sidebar-header {
+            padding: 20px 15px;
+            background-color: #1a252f;
+            border-bottom: 1px solid #34495e;
+        }
+        
+        .sidebar-header h3 {
+            color: #ecf0f1;
+            font-size: 18px;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .sidebar-menu {
+            padding: 15px 0;
+            list-style: none;
+            margin: 0;
+        }
+        
+        .sidebar-menu .menu-item {
+            padding: 0;
+            position: relative;
+        }
+        
+        .sidebar-menu .menu-link {
+            display: flex;
+            align-items: center;
+            color: #b8c7ce;
+            padding: 12px 20px;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-menu .menu-link:hover {
+            color: #fff;
+            background-color: #34495e;
+            border-left-color: #3498db;
+        }
+        
+        .sidebar-menu .menu-link.active {
+            color: #fff;
+            background-color: #34495e;
+            border-left-color: #3498db;
+        }
+        
+        .sidebar-menu .menu-icon {
+            margin-right: 10px;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-menu .menu-text {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar-toggler {
+            position: absolute;
+            top: 10px;
+            right: -12px;
+            background: #3498db;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            border: 2px solid #f5f8fa;
+        }
+        
+        /* Collapsed sidebar styles */
+        .sidebar.collapsed .menu-text,
+        .sidebar.collapsed .sidebar-header h3,
+        .sidebar.collapsed .sidebar-header p {
+            display: none;
+        }
+        
+        .sidebar.collapsed .sidebar-menu .menu-link {
+            padding: 12px 15px;
+            justify-content: center;
+        }
+        
+        .sidebar.collapsed .sidebar-menu .menu-icon {
+            margin-right: 0;
+            font-size: 18px;
+        }
+        
+        .sidebar.collapsed .sidebar-toggler {
+            right: -12px;
+        }
+        
+        /* Content Styles */
+        .content-wrapper {
+            flex: 1;
+            padding: 20px;
+            transition: all 0.3s;
+            max-width: calc(100vw - 260px);
+        }
+        
+        .main-container.sidebar-collapsed .content-wrapper {
+            max-width: calc(100vw - 70px);
+        }
+        
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            padding: 15px 20px;
+            border-top-left-radius: 10px !important;
+            border-top-right-radius: 10px !important;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Stats Card */
+        .stats-card {
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            z-index: 1;
+        }
+        
+        .stats-card .card-body {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stats-card .stats-icon {
+            position: absolute;
+            bottom: -15px;
+            right: 10px;
+            font-size: 72px;
+            opacity: 0.2;
+            z-index: 0;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stats-card .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .stats-card .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Table Styles */
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead th {
+            border-top: none;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .table td, .table th {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+        
+        /* Improved Navbar Styles */
+        .navbar {
+            padding: 0 20px;
+            height: 60px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 200;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+            padding: 0 15px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-dark .navbar-nav .active > .nav-link,
+        .navbar-dark .navbar-nav .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .user-welcome {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        /* Flash Messages */
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        /* Badges */
+        .badge {
+            padding: 5px 10px;
+            font-weight: 500;
+            border-radius: 5px;
+        }
+        
+        /* Chatbot Widget Styles */
+        .chat-widget-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .chat-widget-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            align-self: flex-end;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-widget-button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .chat-widget-button i {
+            font-size: 24px;
+        }
+        
+        .chat-widget-box {
+            display: none;
+            width: 350px;
+            height: 450px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            overflow: hidden;
+            flex-direction: column;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chat-widget-header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-widget-close {
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .chat-widget-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .chat-message {
+            max-width: 80%;
+            padding: 12px;
+            border-radius: 15px;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            line-height: 1.4;
+        }
+        
+        .bot-message {
+            background-color: #e8f4fd;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
             color: #333;
         }
-        .nav-link.active {
-            background-color: #e9ecef;
+        
+        .user-message {
+            background-color: #3498db;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+            color: white;
         }
-        .flash-messages {
-            margin-top: 15px;
+        
+        .chat-widget-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #e0e0e0;
+            background-color: white;
         }
-        .card {
-            margin-bottom: 20px;
+        
+        .chat-widget-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .chat-widget-input input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .chat-widget-input button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin-left: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .chat-widget-input button:hover {
+            background-color: #2980b9;
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background-color: #e8f4fd;
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 5px;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background-color: #3498db;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 3px;
+            animation: typing 1s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: -260px;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .content-wrapper {
+                max-width: 100%;
+            }
+            
+            .main-container.sidebar-collapsed .content-wrapper {
+                max-width: 100%;
+            }
+            
+            .sidebar-toggler {
+                right: -35px;
+                background: #3498db;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-card {
+                margin-bottom: 20px;
+            }
+            
+            .chat-widget-box {
+                width: 300px;
+                height: 400px;
+            }
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -31,32 +531,45 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Hospital Management System</a>
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-hospital"></i>HMS
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                        <a class="nav-link {% if request.path == url_for('index') %}active{% endif %}" href="{{ url_for('index') }}">
+                            <i class="fas fa-home"></i> Home
+                        </a>
                     </li>
                     {% if session.get('user_id') %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                            <a class="nav-link {% if request.path == url_for('dashboard') %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     {% if session.get('user_id') %}
-                        <li class="nav-item">
-                            <span class="nav-link">Welcome, {{ session.get('username') }}</span>
+                        <li class="nav-item user-welcome">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="nav-link">{{ session.get('username') }}</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                            <a class="nav-link {% if request.path == url_for('login') %}active{% endif %}" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -64,22 +577,304 @@
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="flash-messages">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
+    <div class="main-container">
+        {% if session.get('user_id') %}
+        <div class="sidebar">
+            <div class="sidebar-toggler">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="sidebar-header">
+                <h3>
+                    {% if session.get('user_type') == 'admin' %}
+                        Admin Panel
+                    {% elif session.get('user_type') == 'doctor' %}
+                        Doctor Portal
+                    {% elif session.get('user_type') == 'patient' %}
+                        Patient Portal
+                    {% endif %}
+                </h3>
+            </div>
+            <ul class="sidebar-menu">
+                {% if session.get('user_type') == 'admin' %}
+                    <li class="menu-item">
+                        <a href="{{ url_for('dashboard') }}" class="menu-link {% if request.path == url_for('dashboard') %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('admin_doctors') }}" class="menu-link {% if '/admin/doctors' in request.path %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-user-md"></i></span>
+                            <span class="menu-text">Doctors</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('admin_patients') }}" class="menu-link {% if '/admin/patients' in request.path %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-user-injured"></i></span>
+                            <span class="menu-text">Patients</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-calendar-check"></i></span>
+                            <span class="menu-text">Appointments</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-cog"></i></span>
+                            <span class="menu-text">Settings</span>
+                        </a>
+                    </li>
+                {% elif session.get('user_type') == 'doctor' %}
+                    <li class="menu-item">
+                        <a href="{{ url_for('dashboard') }}" class="menu-link {% if request.path == url_for('dashboard') %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('doctor_patients') }}" class="menu-link {% if '/doctor/patients' in request.path %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-users"></i></span>
+                            <span class="menu-text">My Patients</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('doctor_appointments') }}" class="menu-link {% if '/doctor/appointments' in request.path %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                            <span class="menu-text">Appointments</span>
+                        </a>
+                    </li>
+                {% elif session.get('user_type') == 'patient' %}
+                    <li class="menu-item">
+                        <a href="{{ url_for('dashboard') }}" class="menu-link {% if request.path == url_for('dashboard') %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('patient_profile') }}" class="menu-link {% if '/patient/profile' in request.path %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-user"></i></span>
+                            <span class="menu-text">My Profile</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('patient_appointments') }}" class="menu-link {% if '/patient/appointments' in request.path %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+                            <span class="menu-text">Appointments</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('patient_medical_records') }}" class="menu-link {% if '/patient/medical_records' in request.path %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-file-medical"></i></span>
+                            <span class="menu-text">Medical Records</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('patient_diagnoses') }}" class="menu-link {% if '/patient/diagnoses' in request.path %}active{% endif %}">
+                            <span class="menu-icon"><i class="fas fa-stethoscope"></i></span>
+                            <span class="menu-text">Diagnoses</span>
+                        </a>
+                    </li>
                 {% endif %}
-            {% endwith %}
+            </ul>
         </div>
+        {% endif %}
+        
+        <div class="content-wrapper">
+            <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
 
-        {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
+        </div>
     </div>
+
+    <!-- Chatbot Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar Toggle Functionality
+            const sidebarToggler = document.querySelector('.sidebar-toggler');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContainer = document.querySelector('.main-container');
+            
+            if (sidebarToggler) {
+                sidebarToggler.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    mainContainer.classList.toggle('sidebar-collapsed');
+                    
+                    // Change the icon direction
+                    const icon = this.querySelector('i');
+                    if (sidebar.classList.contains('collapsed')) {
+                        icon.classList.remove('fa-chevron-left');
+                        icon.classList.add('fa-chevron-right');
+                    } else {
+                        icon.classList.remove('fa-chevron-right');
+                        icon.classList.add('fa-chevron-left');
+                    }
+                });
+            }
+            
+            // Mobile sidebar toggle
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            if (navbarToggler && sidebar) {
+                navbarToggler.addEventListener('click', function() {
+                    if (window.innerWidth < 992) {
+                        sidebar.classList.toggle('active');
+                    }
+                });
+            }
+            
+            // Create chat widget elements
+            const body = document.querySelector('body');
+            
+            // Container
+            const chatWidgetContainer = document.createElement('div');
+            chatWidgetContainer.className = 'chat-widget-container';
+            
+            // Chat Box
+            const chatWidgetBox = document.createElement('div');
+            chatWidgetBox.className = 'chat-widget-box';
+            
+            // Chat Header
+            const chatWidgetHeader = document.createElement('div');
+            chatWidgetHeader.className = 'chat-widget-header';
+            chatWidgetHeader.innerHTML = '<span><i class="fas fa-robot me-2"></i>Medical Assistant</span><span class="chat-widget-close">&times;</span>';
+            
+            // Chat Messages
+            const chatWidgetMessages = document.createElement('div');
+            chatWidgetMessages.className = 'chat-widget-messages';
+            
+            // Typing Indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'typing-indicator';
+            typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+            chatWidgetMessages.appendChild(typingIndicator);
+            
+            // Chat Input
+            const chatWidgetInput = document.createElement('div');
+            chatWidgetInput.className = 'chat-widget-input';
+            chatWidgetInput.innerHTML = '<input type="text" placeholder="Ask a medical question..."><button><i class="fas fa-paper-plane"></i></button>';
+            
+            // Chat Button
+            const chatWidgetButton = document.createElement('div');
+            chatWidgetButton.className = 'chat-widget-button';
+            chatWidgetButton.innerHTML = '<i class="fas fa-comment-medical"></i>';
+            
+            // Append elements
+            chatWidgetBox.appendChild(chatWidgetHeader);
+            chatWidgetBox.appendChild(chatWidgetMessages);
+            chatWidgetBox.appendChild(chatWidgetInput);
+            
+            chatWidgetContainer.appendChild(chatWidgetBox);
+            chatWidgetContainer.appendChild(chatWidgetButton);
+            
+            body.appendChild(chatWidgetContainer);
+            
+            // Add welcome message
+            addBotMessage("Hello! I'm your medical assistant powered by Gemini AI. How can I help you today?");
+            
+            // Event Listeners
+            chatWidgetButton.addEventListener('click', function() {
+                chatWidgetBox.style.display = 'flex';
+                chatWidgetButton.style.display = 'none';
+            });
+            
+            document.querySelector('.chat-widget-close').addEventListener('click', function() {
+                chatWidgetBox.style.display = 'none';
+                chatWidgetButton.style.display = 'flex';
+            });
+            
+            const inputField = chatWidgetInput.querySelector('input');
+            const sendButton = chatWidgetInput.querySelector('button');
+            
+            function sendMessage() {
+                const message = inputField.value.trim();
+                if (message) {
+                    // Add user message to chat
+                    addUserMessage(message);
+                    
+                    // Clear input
+                    inputField.value = '';
+                    
+                    // Show typing indicator
+                    typingIndicator.style.display = 'block';
+                    
+                    // Send to backend
+                    fetchBotResponse(message);
+                }
+            }
+            
+            sendButton.addEventListener('click', sendMessage);
+            
+            inputField.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            function addUserMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message user-message';
+                messageDiv.textContent = message;
+                
+                // Insert before typing indicator
+                chatWidgetMessages.insertBefore(messageDiv, typingIndicator);
+                
+                // Scroll to bottom
+                chatWidgetMessages.scrollTop = chatWidgetMessages.scrollHeight;
+            }
+            
+            function addBotMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message bot-message';
+                messageDiv.textContent = message;
+                
+                // Hide typing indicator
+                typingIndicator.style.display = 'none';
+                
+                // Add message
+                chatWidgetMessages.appendChild(messageDiv);
+                
+                // Scroll to bottom
+                chatWidgetMessages.scrollTop = chatWidgetMessages.scrollHeight;
+            }
+            
+            function fetchBotResponse(message) {
+                fetch('/chatbot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: message
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Add bot response
+                    addBotMessage(data.response);
+                })
+                .catch(error => {
+                    // Hide typing indicator
+                    typingIndicator.style.display = 'none';
+                    
+                    // Add error message
+                    addBotMessage('Sorry, I encountered an error. Please try again later.');
+                    console.error('Error:', error);
+                });
+            }
+        });
+    </script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
