@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group mb-4">
+                <a href="{{ url_for('admin_doctors') }}" class="list-group-item list-group-item-action">Manage Doctors</a>
+                <a href="{{ url_for('admin_patients') }}" class="list-group-item list-group-item-action">Manage Patients</a>
+                <a href="#" class="list-group-item list-group-item-action">View Appointments</a>
+                <a href="#" class="list-group-item list-group-item-action">System Settings</a>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Doctors</h5>
+                            <p class="card-text display-4">{{ doctors|length }}</p>
+                            <a href="{{ url_for('admin_doctors') }}" class="btn btn-light">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Patients</h5>
+                            <p class="card-text display-4">{{ patients|length }}</p>
+                            <a href="{{ url_for('admin_patients') }}" class="btn btn-light">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <h5 class="card-title">Appointments Today</h5>
+                            <p class="card-text display-4">
+                                {% set today_appointments = 0 %}
+                                {% for app in appointments %}
+                                    {% if app.Date == current_date %}
+                                        {% set today_appointments = today_appointments + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ today_appointments }}
+                            </p>
+                            <a href="#" class="btn btn-light">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Appointments</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments[:10] %}
+                                <tr>
+                                    <td>{{ appointment.AppointmentID }}</td>
+                                    <td>{{ appointment.PatientName }}</td>
+                                    <td>{{ appointment.DoctorName }}</td>
+                                    <td>{{ appointment.Date }}</td>
+                                    <td>{{ appointment.Time }}</td>
+                                    <td>
+                                        <span class="badge {% if appointment.Status == 'Scheduled' %}bg-warning{% elif appointment.Status == 'Completed' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ appointment.Status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No appointments found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

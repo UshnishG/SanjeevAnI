@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage Patients{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Patients</h1>
+        <a href="{{ url_for('admin_add_patient') }}" class="btn btn-primary">Add New Patient</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Contact</th>
+                            <th>Assigned Doctor</th>
+                            <th>Registration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>{{ patient.PatientID }}</td>
+                            <td>{{ patient.Name }}</td>
+                            <td>{{ patient.Age }}</td>
+                            <td>{{ patient.Gender }}</td>
+                            <td>{{ patient.ContactNumber }}</td>
+                            <td>{{ patient.DoctorName or 'Not Assigned' }}</td>
+                            <td>{{ patient.RegistrationDate }}</td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-info">View</a>
+                                <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">No patients found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

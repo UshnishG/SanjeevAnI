@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">My Profile</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Name:</strong></div>
+                        <div class="col-md-8">{{ patient.Name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Age:</strong></div>
+                        <div class="col-md-8">{{ patient.Age }} years</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Gender:</strong></div>
+                        <div class="col-md-8">{{ patient.Gender }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Blood Group:</strong></div>
+                        <div class="col-md-8">{{ patient.BloodGroup or 'Not Specified' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Contact Number:</strong></div>
+                        <div class="col-md-8">{{ patient.ContactNumber }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Email:</strong></div>
+                        <div class="col-md-8">{{ patient.Email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Address:</strong></div>
+                        <div class="col-md-8">{{ patient.Address }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Registration Date:</strong></div>
+                        <div class="col-md-8">{{ patient.RegistrationDate }}</div>
+                    </div>
+                    <div class="text-end">
+                        <a href="#" class="btn btn-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Medical History</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ patient.MedicalHistory or 'No medical history recorded.' }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Assigned Doctor</h5>
+                </div>
+                <div class="card-body">
+                    {% if doctor %}
+                    <div class="text-center mb-3">
+                        <img src="https://via.placeholder.com/150" class="rounded-circle" alt="Doctor">
+                    </div>
+                    <h5 class="text-center mb-3">{{ doctor.Name }}</h5>
+                    <div class="row mb-2">
+                        <div class="col-md-5"><strong>Specialisation:</strong></div>
+                        <div class="col-md-7">{{ doctor.Specialisation }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-5"><strong>Contact:</strong></div>
+                        <div class="col-md-7">{{ doctor.ContactNumber }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-5"><strong>Email:</strong></div>
+                        <div class="col-md-7">{{ doctor.Email }}</div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('patient_book_appointment') }}" class="btn btn-primary">Book Appointment</a>
+                    </div>
+                    {% else %}
+                    <p class="text-center">No doctor assigned yet.</p>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('patient_book_appointment') }}" class="btn btn-primary">Choose a Doctor</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

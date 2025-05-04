@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}Medical Records{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="mb-4">My Medical Records</h1>
+    
+    <div class="row">
+        <div class="col-md-12">
+            {% if records %}
+                {% for record in records %}
+                <div class="card mb-3">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Record Date: {{ record.RecordDate }}</h5>
+                        <span>Doctor: {{ record.DoctorName }}</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Diagnosis:</strong> {{ record.Diagnosis }}</p>
+                        <p><strong>Treatment:</strong> {{ record.Treatment }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    You don't have any medical records yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

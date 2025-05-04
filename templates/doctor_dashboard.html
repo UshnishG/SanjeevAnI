@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="mb-4">Doctor Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group mb-4">
+                <a href="{{ url_for('doctor_patients') }}" class="list-group-item list-group-item-action">My Patients</a>
+                <a href="{{ url_for('doctor_appointments') }}" class="list-group-item list-group-item-action">Appointments</a>
+                <a href="#" class="list-group-item list-group-item-action">Update Profile</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Doctor Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ doctor.Name }}</p>
+                    <p><strong>Specialisation:</strong> {{ doctor.Specialisation }}</p>
+                    <p><strong>Contact:</strong> {{ doctor.ContactNumber }}</p>
+                    <p><strong>Email:</strong> {{ doctor.Email }}</p>
+                    <p><strong>Join Date:</strong> {{ doctor.JoinDate }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Patients</h5>
+                            <p class="card-text display-4">{{ patients|length }}</p>
+                            <a href="{{ url_for('doctor_patients') }}" class="btn btn-light">View Patients</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Upcoming Appointments</h5>
+                            <p class="card-text display-4">{{ appointments|length }}</p>
+                            <a href="{{ url_for('doctor_appointments') }}" class="btn btn-light">View Schedule</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <h5 class="card-title">Today's Appointments</h5>
+                            <p class="card-text display-4">
+                                {% set today_appointments = 0 %}
+                                {% for app in appointments %}
+                                    {% if app.Date == current_date %}
+                                        {% set today_appointments = today_appointments + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ today_appointments }}
+                            </p>
+                            <a href="{{ url_for('doctor_appointments') }}" class="btn btn-light">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Upcoming Appointments</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Patient Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Purpose</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments[:5] %}
+                                <tr>
+                                    <td>{{ appointment.PatientName }}</td>
+                                    <td>{{ appointment.Date }}</td>
+                                    <td>{{ appointment.Time }}</td>
+                                    <td>{{ appointment.Purpose }}</td>
+                                    <td>
+                                        <form method="post" action="{{ url_for('doctor_update_appointment', appointment_id=appointment.AppointmentID) }}">
+                                            <select class="form-select form-select-sm d-inline-block w-auto me-2" name="status">
+                                                <option value="Scheduled" {% if appointment.Status == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+                                                <option value="Completed" {% if appointment.Status == 'Completed' %}selected{% endif %}>Completed</option>
+                                                <option value="Cancelled" {% if appointment.Status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No upcoming appointments</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-end">
+                        <a href="{{ url_for('doctor_appointments') }}" class="btn btn-outline-primary">View All Appointments</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

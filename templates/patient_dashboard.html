@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="mb-4">Patient Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group mb-4">
+                <a href="{{ url_for('patient_profile') }}" class="list-group-item list-group-item-action">My Profile</a>
+                <a href="{{ url_for('patient_appointments') }}" class="list-group-item list-group-item-action">My Appointments</a>
+                <a href="{{ url_for('patient_medical_records') }}" class="list-group-item list-group-item-action">Medical Records</a>
+                <a href="{{ url_for('patient_diagnoses') }}" class="list-group-item list-group-item-action">Diagnoses</a>
+                <a href="{{ url_for('patient_book_appointment') }}" class="list-group-item list-group-item-action">Book Appointment</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">My Doctor</h5>
+                </div>
+                <div class="card-body">
+                    {% if doctor %}
+                    <p><strong>Name:</strong> {{ doctor.Name }}</p>
+                    <p><strong>Specialisation:</strong> {{ doctor.Specialisation }}</p>
+                    <p><strong>Contact:</strong> {{ doctor.ContactNumber }}</p>
+                    <p><strong>Email:</strong> {{ doctor.Email }}</p>
+                    {% else %}
+                    <p class="text-center">No doctor assigned yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Appointments</h5>
+                            <p class="card-text display-4">{{ appointments|length }}</p>
+                            <a href="{{ url_for('patient_appointments') }}" class="btn btn-light">View All</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Medical Records</h5>
+                            <p class="card-text display-4">{{ medical_records|length }}</p>
+                            <a href="{{ url_for('patient_medical_records') }}" class="btn btn-light">View Records</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <h5 class="card-title">Diagnoses</h5>
+                            <p class="card-text display-4">{{ diagnoses|length }}</p>
+                            <a href="{{ url_for('patient_diagnoses') }}" class="btn btn-light">View Diagnoses</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Upcoming Appointments</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                    {% if appointment.Status == 'Scheduled' and appointment.Date >= current_date %}
+                                    <tr>
+                                        <td>{{ appointment.DoctorName }}</td>
+                                        <td>{{ appointment.Date }}</td>
+                                        <td>{{ appointment.Time }}</td>
+                                        <td>{{ appointment.Purpose }}</td>
+                                        <td>
+                                            <span class="badge bg-warning">{{ appointment.Status }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No upcoming appointments</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-end mt-3">
+                        <a href="{{ url_for('patient_book_appointment') }}" class="btn btn-primary">Book New Appointment</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Medical Records</h5>
+                </div>
+                <div class="card-body">
+                    {% if medical_records %}
+                        {% for record in medical_records[:3] %}
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">{{ record.RecordDate }} - Dr. {{ record.DoctorName }}</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Diagnosis:</strong> {{ record.Diagnosis }}</p>
+                                <p><strong>Treatment:</strong> {{ record.Treatment }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="text-end">
+                            <a href="{{ url_for('patient_medical_records') }}" class="btn btn-outline-primary">View All Records</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">No medical records available.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

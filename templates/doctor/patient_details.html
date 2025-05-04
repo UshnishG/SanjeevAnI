@@ -1,0 +1,166 @@
+{% extends "layout.html" %}
+
+{% block title %}Patient Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Patient: {{ patient.Name }}</h1>
+        <div>
+            <a href="{{ url_for('doctor_add_diagnosis', patient_id=patient.PatientID) }}" class="btn btn-success me-2">Add Diagnosis</a>
+            <a href="{{ url_for('doctor_add_medical_record', patient_id=patient.PatientID) }}" class="btn btn-primary">Add Medical Record</a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Patient Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-4"><strong>Age:</strong></div>
+                        <div class="col-md-8">{{ patient.Age }} years</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4"><strong>Gender:</strong></div>
+                        <div class="col-md-8">{{ patient.Gender }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4"><strong>Blood Group:</strong></div>
+                        <div class="col-md-8">{{ patient.BloodGroup or 'Not Specified' }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4"><strong>Contact:</strong></div>
+                        <div class="col-md-8">{{ patient.ContactNumber }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4"><strong>Email:</strong></div>
+                        <div class="col-md-8">{{ patient.Email }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4"><strong>Address:</strong></div>
+                        <div class="col-md-8">{{ patient.Address }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4"><strong>Registration:</strong></div>
+                        <div class="col-md-8">{{ patient.RegistrationDate }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Medical History</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ patient.MedicalHistory or 'No medical history recorded.' }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-7">
+            <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="diagnoses-tab" data-bs-toggle="tab" data-bs-target="#diagnoses" type="button" role="tab" aria-controls="diagnoses" aria-selected="true">Diagnoses</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="medical-records-tab" data-bs-toggle="tab" data-bs-target="#medical-records" type="button" role="tab" aria-controls="medical-records" aria-selected="false">Medical Records</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab" aria-controls="appointments" aria-selected="false">Appointments</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content p-3 border border-top-0 rounded-bottom" id="patientTabsContent">
+                <!-- Diagnoses Tab -->
+                <div class="tab-pane fade show active" id="diagnoses" role="tabpanel" aria-labelledby="diagnoses-tab">
+                    {% if diagnoses %}
+                        {% for diagnosis in diagnoses %}
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Diagnosis on {{ diagnosis.Date }}</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Symptoms:</strong> {{ diagnosis.Symptoms }}</p>
+                                <p><strong>Diagnosis:</strong> {{ diagnosis.Diagnosis }}</p>
+                                {% if diagnosis.Notes %}
+                                <p><strong>Notes:</strong> {{ diagnosis.Notes }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">No diagnoses recorded for this patient.</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Medical Records Tab -->
+                <div class="tab-pane fade" id="medical-records" role="tabpanel" aria-labelledby="medical-records-tab">
+                    {% if medical_records %}
+                        {% for record in medical_records %}
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Medical Record on {{ record.RecordDate }}</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Diagnosis:</strong> {{ record.Diagnosis }}</p>
+                                <p><strong>Treatment:</strong> {{ record.Treatment }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">No medical records available for this patient.</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Appointments Tab -->
+                <div class="tab-pane fade" id="appointments" role="tabpanel" aria-labelledby="appointments-tab">
+                    {% if appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                <tr>
+                                    <td>{{ appointment.Date }}</td>
+                                    <td>{{ appointment.Time }}</td>
+                                    <td>{{ appointment.Purpose }}</td>
+                                    <td>
+                                        <span class="badge {% if appointment.Status == 'Scheduled' %}bg-warning{% elif appointment.Status == 'Completed' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ appointment.Status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form method="post" action="{{ url_for('doctor_update_appointment', appointment_id=appointment.AppointmentID) }}">
+                                            <select class="form-select form-select-sm d-inline-block w-auto me-2" name="status">
+                                                <option value="Scheduled" {% if appointment.Status == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+                                                <option value="Completed" {% if appointment.Status == 'Completed' %}selected{% endif %}>Completed</option>
+                                                <option value="Cancelled" {% if appointment.Status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <div class="alert alert-info">No appointments scheduled with this patient.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

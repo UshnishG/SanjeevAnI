@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4">Welcome to Hospital Management System</h1>
+            <p class="lead">A comprehensive solution for managing hospital operations, patients, and medical records.</p>
+            
+            <div class="mt-5">
+                {% if not session.get('user_id') %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mx-2">Login</a>
+                {% else %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg mx-2">Go to Dashboard</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">For Patients</h3>
+                    <p class="card-text">Access your medical records, book appointments, and communicate with your doctors.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">For Doctors</h3>
+                    <p class="card-text">Manage your patients, update medical records, and schedule appointments.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">For Administrators</h3>
+                    <p class="card-text">Oversee hospital operations, manage staff, and ensure efficient patient care.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
