@@ -7,7 +7,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Doctor Dashboard</h1>
         <div>
-            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-outline-primary shadow-sm me-2">
+            <a href="{{ url_for('doctor_add_appointment') }}" class="d-none d-sm-inline-block btn btn-sm btn-outline-primary shadow-sm me-2">
                 <i class="fas fa-calendar-plus fa-sm me-2"></i>Add Appointment
             </a>
             <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
@@ -183,7 +183,9 @@
                                         <div class="text-muted">
                                             <i class="fas fa-calendar-times fa-3x mb-3"></i>
                                             <p>No upcoming appointments scheduled</p>
-                                            <a href="#" class="btn btn-sm btn-primary">Schedule New Appointment</a>
+                                            <a href="{{ url_for('doctor_add_appointment') }}" class="d-none d-sm-inline-block btn btn-sm btn-outline-primary shadow-sm me-2">
+                                                <i class="fas fa-calendar-plus fa-sm me-2"></i>Schedule Appointment
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -192,9 +194,9 @@
                         </table>
                     </div>
                     {% if appointments|length > 5 %}
-                    <div class="text-center mt-3">
-                        <a href="{{ url_for('doctor_appointments') }}" class="btn btn-sm btn-primary">View All Appointments</a>
-                    </div>
+                    <a href="{{ url_for('doctor_calendar') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-clipboard-list me-2"></i>View all Appointments
+                    </a>
                     {% endif %}
                 </div>
             </div>
@@ -204,7 +206,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold">Doctor Profile</h6>
-                    <a href="#" class="btn btn-sm btn-outline-primary">
+                    <a href="{{ url_for('doctor_edit_profile') }}" class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-edit"></i>
                     </a>
                 </div>
@@ -244,7 +246,7 @@
                         <a href="{{ url_for('doctor_patients') }}" class="btn btn-primary">
                             <i class="fas fa-users me-2"></i>View Patients
                         </a>
-                        <a href="#" class="btn btn-outline-primary">
+                        <a href="{{ url_for('doctor_calendar') }}" class="btn btn-outline-primary">
                             <i class="fas fa-clipboard-list me-2"></i>My Schedule
                         </a>
                     </div>

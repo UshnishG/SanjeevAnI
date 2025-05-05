@@ -46,7 +46,9 @@
                         <div class="col-md-8">{{ patient.RegistrationDate }}</div>
                     </div>
                     <div class="text-end">
-                        <a href="#" class="btn btn-primary">Edit Profile</a>
+                        <a href="{{ url_for('patient_edit_profile') }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i>
+                        </a>
                     </div>
                 </div>
             </div>

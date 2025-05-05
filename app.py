@@ -3,7 +3,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import google.generativeai as genai
 import os
@@ -324,6 +324,406 @@ def chatbot():
         response = generate_medical_response(query)
     
     return jsonify({"response": response})
+
+@app.route('/admin/edit_appointment/<int:appointment_id>', methods=['GET', 'POST'])
+def admin_edit_appointment(appointment_id):
+    if 'user_id' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    
+    # Get the appointment details
+    appointment = conn.execute('''
+    SELECT a.*, p.Name as PatientName, d.Name as DoctorName 
+    FROM Appointment a 
+    JOIN Patient p ON a.PatientID = p.PatientID 
+    JOIN Doctor d ON a.DoctorID = d.DoctorID 
+    WHERE a.AppointmentID = ?
+    ''', (appointment_id,)).fetchone()
+    
+    if not appointment:
+        conn.close()
+        flash('Appointment not found', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get all doctors and patients for the dropdown menus
+    doctors = conn.execute('SELECT * FROM Doctor').fetchall()
+    patients = conn.execute('SELECT * FROM Patient').fetchall()
+    
+    if request.method == 'POST':
+        # Get form data
+        doctor_id = request.form.get('doctor_id')
+        patient_id = request.form.get('patient_id')
+        date = request.form.get('date')
+        time = request.form.get('time')
+        status = request.form.get('status')
+        purpose = request.form.get('purpose')
+        
+        if not all([doctor_id, patient_id, date, time, status]):
+            flash('All required fields must be filled', 'error')
+        else:
+            try:
+                # Update the appointment
+                conn.execute('''
+                UPDATE Appointment 
+                SET DoctorID = ?, PatientID = ?, Date = ?, Time = ?, Status = ?, Purpose = ? 
+                WHERE AppointmentID = ?
+                ''', (doctor_id, patient_id, date, time, status, purpose, appointment_id))
+                
+                conn.commit()
+                flash('Appointment updated successfully', 'success')
+                return redirect(url_for('dashboard'))
+            
+            except Exception as e:
+                flash(f'Error: {str(e)}', 'error')
+    
+    conn.close()
+    
+    return render_template('admin/edit_appointment.html', 
+                          appointment=appointment,
+                          doctors=doctors,
+                          patients=patients)
+
+@app.route('/patient/edit_profile', methods=['GET', 'POST'])
+def patient_edit_profile():
+    if 'user_id' not in session or session['user_type'] != 'patient':
+        return redirect(url_for('login'))
+    
+    patient_id = session['user_id']
+    
+    conn = get_db_connection()
+    patient = conn.execute('SELECT * FROM Patient WHERE PatientID = ?', (patient_id,)).fetchone()
+    
+    if not patient:
+        conn.close()
+        flash('Patient not found', 'error')
+        return redirect(url_for('dashboard'))
+    
+    if request.method == 'POST':
+        # Get form data
+        contact_number = request.form.get('contact_number')
+        email = request.form.get('email')
+        address = request.form.get('address')
+        medical_history = request.form.get('medical_history')
+        
+        try:
+            # Update patient information
+            conn.execute('''
+            UPDATE Patient 
+            SET ContactNumber = ?, Email = ?, Address = ?, MedicalHistory = ? 
+            WHERE PatientID = ?
+            ''', (contact_number, email, address, medical_history, patient_id))
+            
+            conn.commit()
+            flash('Profile updated successfully', 'success')
+            return redirect(url_for('patient_profile'))
+        
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'error')
+    
+    conn.close()
+    
+    return render_template('patient/edit_profile.html', patient=patient)
+
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user_type = session['user_type']
+    user_id = session['user_id']
+    
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if new_password != confirm_password:
+            flash('New passwords do not match', 'error')
+            return redirect(url_for('change_password'))
+        
+        conn = get_db_connection()
+        
+        # Get user based on type
+        if user_type == 'admin':
+            user = conn.execute('SELECT * FROM Admin WHERE AdminID = ?', (user_id,)).fetchone()
+            table = 'Admin'
+            id_column = 'AdminID'
+        elif user_type == 'doctor':
+            user = conn.execute('SELECT * FROM Doctor WHERE DoctorID = ?', (user_id,)).fetchone()
+            table = 'Doctor'
+            id_column = 'DoctorID'
+        else:  # patient
+            user = conn.execute('SELECT * FROM Patient WHERE PatientID = ?', (user_id,)).fetchone()
+            table = 'Patient'
+            id_column = 'PatientID'
+        
+        # Verify current password
+        if not check_password_hash(user['Password'], current_password):
+            conn.close()
+            flash('Current password is incorrect', 'error')
+            return redirect(url_for('change_password'))
+        
+        # Update password
+        hashed_password = generate_password_hash(new_password)
+        conn.execute(f'UPDATE {table} SET Password = ? WHERE {id_column} = ?', 
+                    (hashed_password, user_id))
+        
+        conn.commit()
+        conn.close()
+        
+        flash('Password changed successfully', 'success')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('change_password.html')
+
+@app.route('/doctor/edit_profile', methods=['GET', 'POST'])
+def doctor_edit_profile():
+    if 'user_id' not in session or session['user_type'] != 'doctor':
+        return redirect(url_for('login'))
+    
+    doctor_id = session['user_id']
+    
+    conn = get_db_connection()
+    doctor = conn.execute('SELECT * FROM Doctor WHERE DoctorID = ?', (doctor_id,)).fetchone()
+    
+    if not doctor:
+        conn.close()
+        flash('Doctor not found', 'error')
+        return redirect(url_for('dashboard'))
+    
+    if request.method == 'POST':
+        # Get form data
+        contact_number = request.form.get('contact_number')
+        email = request.form.get('email')
+        specialisation = request.form.get('specialisation')
+        
+        try:
+            # Update doctor information
+            conn.execute('''
+            UPDATE Doctor 
+            SET ContactNumber = ?, Email = ?, Specialisation = ? 
+            WHERE DoctorID = ?
+            ''', (contact_number, email, specialisation, doctor_id))
+            
+            conn.commit()
+            flash('Profile updated successfully', 'success')
+            return redirect(url_for('dashboard'))
+        
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'error')
+    
+    conn.close()
+    
+    return render_template('doctor/edit_profile.html', doctor=doctor)
+
+@app.route('/doctor/add_appointment', methods=['GET', 'POST'])
+def doctor_add_appointment():
+    if 'user_id' not in session or session['user_type'] != 'doctor':
+        return redirect(url_for('login'))
+    
+    doctor_id = session['user_id']
+    current_date = datetime.now().strftime('%Y-%m-%d')  # Add current date
+    
+    conn = get_db_connection()
+    
+    # Get all patients assigned to this doctor
+    patients = conn.execute('''
+    SELECT p.* FROM Patient p 
+    JOIN DoctorPatient dp ON p.PatientID = dp.PatientID 
+    WHERE dp.DoctorID = ?
+    ''', (doctor_id,)).fetchall()
+    
+    if request.method == 'POST':
+        patient_id = request.form.get('patient_id')
+        date = request.form.get('date')
+        time = request.form.get('time')
+        purpose = request.form.get('purpose')
+        
+        if not all([patient_id, date, time]):
+            flash('Patient, date and time are required', 'error')
+        else:
+            try:
+                conn.execute('''
+                INSERT INTO Appointment (PatientID, DoctorID, Date, Time, Purpose) 
+                VALUES (?, ?, ?, ?, ?)
+                ''', (patient_id, doctor_id, date, time, purpose))
+                
+                conn.commit()
+                flash('Appointment added successfully', 'success')
+                return redirect(url_for('doctor_appointments'))
+            
+            except Exception as e:
+                flash(f'Error: {str(e)}', 'error')
+    
+    conn.close()
+    
+    return render_template('doctor/add_appointment.html', 
+                           patients=patients, 
+                           current_date=current_date)
+
+@app.route('/doctor/calendar')
+def doctor_calendar():
+    if 'user_id' not in session or session['user_type'] != 'doctor':
+        return redirect(url_for('login'))
+    
+    doctor_id = session['user_id']
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    
+    conn = get_db_connection()
+    
+    # Get doctor info
+    doctor = conn.execute('SELECT * FROM Doctor WHERE DoctorID = ?', (doctor_id,)).fetchone()
+    
+    # Get all appointments
+    appointments = conn.execute('''
+    SELECT a.*, p.Name as PatientName 
+    FROM Appointment a 
+    JOIN Patient p ON a.PatientID = p.PatientID 
+    WHERE a.DoctorID = ? 
+    ORDER BY a.Date, a.Time
+    ''', (doctor_id,)).fetchall()
+    
+    # Count statistics
+    today_appointments = 0
+    week_appointments = 0
+    month_appointments = 0
+    
+    week_start = datetime.now() - timedelta(days=datetime.now().weekday())
+    week_end = week_start + timedelta(days=6)
+    week_start_str = week_start.strftime('%Y-%m-%d')
+    week_end_str = week_end.strftime('%Y-%m-%d')
+    
+    month_start = datetime.now().replace(day=1)
+    next_month = month_start.replace(day=28) + timedelta(days=4)
+    month_end = next_month - timedelta(days=next_month.day)
+    month_start_str = month_start.strftime('%Y-%m-%d')
+    month_end_str = month_end.strftime('%Y-%m-%d')
+    
+    # Process appointments
+    calendar_events = []
+    
+    for app in appointments:
+        # Count statistics
+        if app['Status'] == 'Scheduled':
+            if app['Date'] == current_date:
+                today_appointments += 1
+            
+            if app['Date'] >= week_start_str and app['Date'] <= week_end_str:
+                week_appointments += 1
+            
+            if app['Date'] >= month_start_str and app['Date'] <= month_end_str:
+                month_appointments += 1
+        
+        # Create calendar events
+        # Ensure time format is correct (HH:MM:SS)
+        time_parts = app['Time'].split(':')
+        start_time = app['Time']
+        if len(time_parts) == 2:
+            start_time = f"{time_parts[0]}:{time_parts[1]}:00"
+        
+        # Calculate end time (30 min after start)
+        hour = int(time_parts[0])
+        minute = int(time_parts[1]) + 30
+        
+        if minute >= 60:
+            hour += 1
+            minute -= 60
+        
+        end_time = f"{hour:02d}:{minute:02d}:00"
+        
+        # Set start and end datetime strings for the event
+        start_datetime = f"{app['Date']}T{start_time}"
+        end_datetime = f"{app['Date']}T{end_time}"
+        
+        # Set color based on status
+        color = "#ffc107"  # Yellow for Scheduled
+        if app['Status'] == 'Completed':
+            color = "#28a745"  # Green for Completed
+        elif app['Status'] == 'Cancelled':
+            color = "#dc3545"  # Red for Cancelled
+        
+        # Create event object
+        event = {
+            'id': app['AppointmentID'],
+            'title': f"{app['PatientName']} - {app['Purpose'] if app['Purpose'] else 'Checkup'}",
+            'start': start_datetime,
+            'end': end_datetime,
+            'color': color,
+            'extendedProps': {
+                'patientId': app['PatientID'],
+                'status': app['Status'],
+                'purpose': app['Purpose']
+            }
+        }
+        
+        calendar_events.append(event)
+    
+    conn.close()
+    
+    # Convert to JSON for use in JavaScript
+    import json
+    
+    # Debug the output
+    print("Calendar Events JSON:")
+    print(json.dumps(calendar_events, indent=2))
+    
+    return render_template('doctor/calendar.html', 
+                          doctor=doctor, 
+                          today_appointments=today_appointments,
+                          week_appointments=week_appointments,
+                          month_appointments=month_appointments,
+                          calendar_events_json=json.dumps(calendar_events))
+
+@app.route('/doctor/edit_diagnosis/<int:diagnosis_id>', methods=['GET', 'POST'])
+def doctor_edit_diagnosis(diagnosis_id):
+    if 'user_id' not in session or session['user_type'] != 'doctor':
+        return redirect(url_for('login'))
+    
+    doctor_id = session['user_id']
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    
+    conn = get_db_connection()
+    
+    # Get the diagnosis and verify it belongs to this doctor
+    diagnosis = conn.execute('''
+    SELECT d.*, p.Name as PatientName
+    FROM Diagnosis d 
+    JOIN Patient p ON d.PatientID = p.PatientID
+    WHERE d.DiagnosisID = ? AND d.DiagnosedBy = ?
+    ''', (diagnosis_id, doctor_id)).fetchone()
+    
+    if not diagnosis:
+        conn.close()
+        flash('Diagnosis not found or you do not have permission to edit it', 'error')
+        return redirect(url_for('doctor_patients'))
+    
+    if request.method == 'POST':
+        symptoms = request.form.get('symptoms')
+        diagnosis_text = request.form.get('diagnosis')
+        notes = request.form.get('notes')
+        date = request.form.get('date')
+        
+        if not all([symptoms, diagnosis_text]):
+            flash('Symptoms and diagnosis are required', 'error')
+        else:
+            try:
+                conn.execute('''
+                UPDATE Diagnosis 
+                SET Symptoms = ?, Diagnosis = ?, Notes = ?, Date = ? 
+                WHERE DiagnosisID = ? AND DiagnosedBy = ?
+                ''', (symptoms, diagnosis_text, notes, date, diagnosis_id, doctor_id))
+                
+                conn.commit()
+                flash('Diagnosis updated successfully', 'success')
+                return redirect(url_for('doctor_view_patient', patient_id=diagnosis['PatientID']))
+            
+            except Exception as e:
+                flash(f'Error: {str(e)}', 'error')
+    
+    conn.close()
+    
+    return render_template('doctor/edit_diagnosis.html', diagnosis=diagnosis, current_date=current_date)
 
 @app.route('/dashboard')
 def dashboard():

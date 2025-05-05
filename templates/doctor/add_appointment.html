@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Appointment{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Schedule New Appointment</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="patient_id" class="form-label">Patient</label>
+                            <select class="form-select" id="patient_id" name="patient_id" required>
+                                <option value="">Select a patient</option>
+                                {% for patient in patients %}
+                                <option value="{{ patient.PatientID }}">
+                                    {{ patient.Name }} - {{ patient.Age }} years, {{ patient.Gender }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" name="date" min="{{ current_date }}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="time" class="form-label">Time</label>
+                                <input type="time" class="form-control" id="time" name="time" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="purpose" class="form-label">Purpose of Appointment</label>
+                            <textarea class="form-control" id="purpose" name="purpose" rows="3" placeholder="Describe the purpose of this appointment..."></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('doctor_appointments') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
