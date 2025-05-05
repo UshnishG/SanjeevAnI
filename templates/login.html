@@ -3,37 +3,138 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Login</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        <div class="mb-3">
-                            <label for="user_type" class="form-label">Login As</label>
-                            <select class="form-select" id="user_type" name="user_type" required>
-                                <option value="admin">Administrator</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="patient">Patient</option>
-                            </select>
+<div class="login-container min-vh-100 d-flex align-items-center py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow login-card">
+                    <div class="row g-0">
+                        <!-- Left side - illustration -->
+                        <div class="col-md-5 d-none d-md-block">
+                            <div class="login-image h-100 d-flex flex-column justify-content-center text-center p-4">
+                                <div class="mb-4">
+                                    <i class="fas fa-hospital-user fa-5x text-white mb-4"></i>
+                                    <h2 class="text-white fw-bold">Hospital Management System</h2>
+                                    <p class="text-white-50 mt-3">Streamlined healthcare for patients, doctors, and administrators</p>
+                                </div>
+                                <div class="mt-auto">
+                                    <p class="text-white-50 small mb-0">© 2025 HMS. All rights reserved.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username/Email</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                            <div class="form-text" id="usernameHelp">For patients, use your email address.</div>
+                        
+                        <!-- Right side - user type selection -->
+                        <div class="col-md-7">
+                            <div class="card-body p-5">
+                                <h3 class="fw-bold mb-2">Welcome</h3>
+                                <p class="text-muted mb-5">Please select your user type to continue</p>
+                                
+                                <div class="row g-4">
+                                    <div class="col-md-4">
+                                        <a href="{{ url_for('patient_login') }}" class="user-type-card d-block text-decoration-none">
+                                            <div class="card h-100 border-0 shadow-sm">
+                                                <div class="card-body text-center p-4">
+                                                    <div class="user-icon bg-primary-light text-primary rounded-circle mx-auto mb-3">
+                                                        <i class="fas fa-user fa-2x"></i>
+                                                    </div>
+                                                    <h5 class="card-title mb-1">Patient</h5>
+                                                    <p class="card-text small text-muted">Access medical records and appointments</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a href="{{ url_for('doctor_login') }}" class="user-type-card d-block text-decoration-none">
+                                            <div class="card h-100 border-0 shadow-sm">
+                                                <div class="card-body text-center p-4">
+                                                    <div class="user-icon bg-success-light text-success rounded-circle mx-auto mb-3">
+                                                        <i class="fas fa-user-md fa-2x"></i>
+                                                    </div>
+                                                    <h5 class="card-title mb-1">Doctor</h5>
+                                                    <p class="card-text small text-muted">Manage patients and treatments</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a href="{{ url_for('admin_login') }}" class="user-type-card d-block text-decoration-none">
+                                            <div class="card h-100 border-0 shadow-sm">
+                                                <div class="card-body text-center p-4">
+                                                    <div class="user-icon bg-purple-light text-purple rounded-circle mx-auto mb-3">
+                                                        <i class="fas fa-user-cog fa-2x"></i>
+                                                    </div>
+                                                    <h5 class="card-title mb-1">Admin</h5>
+                                                    <p class="card-text small text-muted">Oversee hospital operations</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-5">
+                                    <p class="text-muted mb-0">Need help? <a href="#" class="text-decoration-none">Contact support</a></p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .login-container {
+        background-color: #f8f9fa;
+    }
+    
+    .login-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .login-image {
+        background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+        border-radius: 15px 0 0 15px;
+    }
+    
+    .user-icon {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .user-type-card:hover .user-icon {
+        transform: translateY(-5px);
+    }
+    
+    .user-type-card:hover .card {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .bg-primary-light {
+        background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    .bg-success-light {
+        background-color: rgba(46, 204, 113, 0.1);
+    }
+    
+    .bg-purple-light {
+        background-color: rgba(155, 89, 182, 0.1);
+    }
+    
+    .text-purple {
+        color: #9b59b6;
+    }
+</style>
 {% endblock %}

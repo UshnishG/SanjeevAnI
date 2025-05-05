@@ -4,16 +4,29 @@
 
 {% block extra_css %}
 <style>
+    body {
+        overflow-x: hidden;
+    }
+    
+    .container-wrapper {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
     /* Hero section styling */
     .hero-section {
-        background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-        color: white;
-        padding: 80px 0;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        position: relative;
-        overflow: hidden;
-    }
+    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+    color: white;
+    padding: 80px 0 120px; /* Increased bottom padding */
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    margin-top: 30px;
+    width: 100%;
+}
     
     .hero-section::before {
         content: '';
@@ -29,13 +42,13 @@
     
     .hero-title {
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         font-size: 2.8rem;
     }
     
     .hero-subtitle {
         font-size: 1.3rem;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
         font-weight: 300;
     }
     
@@ -55,17 +68,22 @@
     
     /* Feature cards styling */
     .feature-section {
-        margin-top: -60px;
-    }
+    margin-top: -50px; /* Changed from -70px to -50px */
+    padding: 0 15px;
+    width: 100%;
+    position: relative;
+    z-index: 10; /* Ensure it's above the hero section */
+}
     
-    .feature-card {
-        border: none;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        height: 100%;
-    }
+.feature-card {
+    margin-bottom: 20px; /* Add explicit margin to cards */
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+}
     
     .feature-card:hover {
         transform: translateY(-10px);
@@ -73,13 +91,13 @@
     }
     
     .feature-card .card-body {
-        padding: 30px;
+        padding: 35px;
     }
     
     .feature-icon {
         width: 80px;
         height: 80px;
-        margin: 0 auto 20px;
+        margin: 0 auto 25px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -104,7 +122,7 @@
     
     .feature-card .card-title {
         font-weight: 700;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         font-size: 1.5rem;
     }
     
@@ -112,16 +130,19 @@
         color: #6c757d;
         font-size: 1rem;
         line-height: 1.6;
+        margin-bottom: 25px;
     }
     
     /* Benefits section styling */
     .benefits-section {
-        padding: 80px 0;
+        padding: 100px 0;
+        width: 100%;
+        margin-top: 50px;
     }
     
     .section-title {
         text-align: center;
-        margin-bottom: 50px;
+        margin-bottom: 60px;
         position: relative;
         padding-bottom: 20px;
         font-weight: 700;
@@ -140,13 +161,14 @@
     }
     
     .benefit-card {
-        padding: 25px;
+        padding: 30px;
         border-radius: 10px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         margin-bottom: 30px;
         background-color: white;
         transition: all 0.3s ease;
         border-left: 3px solid transparent;
+        height: 100%;
     }
     
     .benefit-card:hover {
@@ -157,12 +179,12 @@
     .benefit-icon {
         font-size: 1.5rem;
         color: #3498db;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
     
     .benefit-title {
         font-weight: 600;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         color: #2c3e50;
     }
     
@@ -174,17 +196,20 @@
     /* Testimonial section styling */
     .testimonial-section {
         background-color: #f8f9fa;
-        padding: 80px 0;
+        padding: 100px 0;
         border-radius: 15px;
+        margin-top: 50px;
+        width: 100%;
     }
     
     .testimonial-card {
         background-color: white;
         border-radius: 10px;
-        padding: 30px;
+        padding: 35px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         margin-bottom: 30px;
         position: relative;
+        height: 100%;
     }
     
     .testimonial-card::before {
@@ -201,7 +226,7 @@
     .testimonial-text {
         font-style: italic;
         color: #6c757d;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         padding-left: 30px;
     }
     
@@ -239,22 +264,23 @@
     .footer-cta {
         background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
         color: white;
-        padding: 50px 0;
+        padding: 70px 0;
         border-radius: 15px;
-        margin-bottom: 50px;
+        margin: 80px 0;
+        width: 100%;
     }
     
     .cta-text {
         font-size: 1.8rem;
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
     
     .cta-button {
         background-color: white;
         color: #3498db;
         border: none;
-        padding: 12px 30px;
+        padding: 15px 35px;
         border-radius: 50px;
         font-weight: 600;
         transition: all 0.3s;
@@ -266,28 +292,71 @@
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
     }
     
+    /* Fix for btn-outline-purple */
+    .btn-outline-purple {
+        color: #9b59b6;
+        border-color: #9b59b6;
+    }
+    
+    .btn-outline-purple:hover {
+        color: white;
+        background-color: #9b59b6;
+    }
+    .row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.col-md-4 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
     /* Responsive adjustments */
     @media (max-width: 992px) {
+
+        .hero-section{
+            padding-bottom: 80px;
+        }
+
+        .feature-section{
+            margin-top: 30px;
+        }        
+        
         .hero-title {
             font-size: 2.3rem;
         }
         
         .feature-section {
-            margin-top: 50px;
+            margin-top: 30px;
         }
         
         .feature-card {
             margin-bottom: 30px;
+        }
+        
+        .benefits-section, .testimonial-section {
+            padding: 70px 0;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .hero-section {
+            padding: 60px 0;
+        }
+        
+        .container-wrapper {
+            padding: 0 10px;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="container py-5 d-flex justify-content-center">
-    <div class="w-100" style="max-width: 1200px;">
-    <div class="hero-section mb-5">
+<!-- Main Container -->
+<div class="container-wrapper">
+    <!-- Hero Section -->
+    <div class="hero-section">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-7 px-4">
@@ -363,7 +432,7 @@
     <div class="benefits-section">
         <h2 class="section-title">Why Choose Our System</h2>
         <div class="row">
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-lock"></i>
@@ -372,7 +441,7 @@
                     <p class="benefit-text">Enterprise-grade security with full HIPAA compliance to protect sensitive patient information.</p>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-users"></i>
@@ -381,7 +450,7 @@
                     <p class="benefit-text">Seamless communication between doctors, staff, and patients for better care coordination.</p>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-chart-line"></i>
@@ -390,7 +459,7 @@
                     <p class="benefit-text">Streamlined workflows reduce administrative burden and optimize resource allocation.</p>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-mobile-alt"></i>
@@ -399,7 +468,7 @@
                     <p class="benefit-text">Access medical information and manage appointments from any device, anywhere.</p>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-file-medical-alt"></i>
@@ -408,7 +477,7 @@
                     <p class="benefit-text">Complete medical history, diagnoses, prescriptions, and treatment plans in one place.</p>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-robot"></i>
@@ -425,7 +494,7 @@
         <div class="container">
             <h2 class="section-title">What Users Say</h2>
             <div class="row">
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="testimonial-card">
                         <p class="testimonial-text">The patient portal has made managing my healthcare so much easier. I can book appointments and view my medical records with just a few clicks.</p>
                         <div class="testimonial-author">
@@ -437,7 +506,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="testimonial-card">
                         <p class="testimonial-text">As a doctor, I've seen a significant improvement in my workflow efficiency. The system helps me provide better care to my patients.</p>
                         <div class="testimonial-author">
@@ -449,7 +518,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="testimonial-card">
                         <p class="testimonial-text">The administrative features have streamlined our hospital operations. Staff management and resource allocation have never been more efficient.</p>
                         <div class="testimonial-author">
@@ -466,7 +535,7 @@
     </div>
     
     <!-- Footer CTA Section -->
-    <div class="footer-cta mt-5">
+    <div class="footer-cta">
         <div class="container text-center">
             <h2 class="cta-text">Ready to transform your healthcare experience?</h2>
             {% if not session.get('user_id') %}

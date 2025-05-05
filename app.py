@@ -16,7 +16,7 @@ app.secret_key = 'hospital_management_secret_key'
 load_dotenv()
 
 # Configure Gemini API
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = "AIzaSyAhP_YoIRSRkclMeRJaOQk_5Z4Bh9JAjXo"
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Create a Gemini model
@@ -283,6 +283,7 @@ def login():
         else:
             flash('Invalid username or password', 'error')
     
+    # For GET method, show the user type selection page
     return render_template('login.html')
 
 @app.route('/logout')
@@ -724,6 +725,78 @@ def doctor_edit_diagnosis(diagnosis_id):
     conn.close()
     
     return render_template('doctor/edit_diagnosis.html', diagnosis=diagnosis, current_date=current_date)
+
+@app.route('/login/patient', methods=['GET', 'POST'])
+def patient_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM Patient WHERE Email = ?', (username,)).fetchone()
+        conn.close()
+        
+        if user and check_password_hash(user['Password'], password):
+            # Login successful
+            session['user_id'] = user['PatientID']
+            session['user_type'] = 'patient'
+            session['username'] = username
+            
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid email or password', 'error')
+    
+    return render_template('patient_login.html')
+
+@app.route('/login/doctor', methods=['GET', 'POST'])
+def doctor_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM Doctor WHERE Username = ?', (username,)).fetchone()
+        conn.close()
+        
+        if user and check_password_hash(user['Password'], password):
+            # Login successful
+            session['user_id'] = user['DoctorID']
+            session['user_type'] = 'doctor'
+            session['username'] = username
+            
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password', 'error')
+    
+    return render_template('doctor_login.html')
+
+@app.route('/login/admin', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM Admin WHERE Username = ?', (username,)).fetchone()
+        
+        if user and check_password_hash(user['Password'], password):
+            # Login successful
+            session['user_id'] = user['AdminID']
+            session['user_type'] = 'admin'
+            session['username'] = username
+            
+            # Update last login for admin
+            conn.execute('UPDATE Admin SET LastLogin = ? WHERE AdminID = ?', 
+                        (datetime.now(), user['AdminID']))
+            conn.commit()
+            conn.close()
+            
+            return redirect(url_for('dashboard'))
+        else:
+            conn.close()
+            flash('Invalid username or password', 'error')
+    
+    return render_template('admin_login.html')
 
 @app.route('/dashboard')
 def dashboard():
